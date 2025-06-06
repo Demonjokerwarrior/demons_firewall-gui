@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scan Logs</title>
+<style>
+  body {
+    background-color: #121212;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+  }
+  header {
+    background-color: #1f1f1f;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #4caf50;
+  }
+  main {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: #222;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid #444;
+    padding: 0.6rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background-color: #333;
+  }
+  .severity-High {
+    color: #e53935;
+    font-weight: bold;
+  }
+  .severity-Medium {
+    color: #ffb300;
+    font-weight: bold;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background-color: #000;
+    padding: 0.5rem;
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  a {
+    color: #4caf50;
+    display: inline-block;
+    margin: 1rem 0;
+  }
+</style>
+</head>
+<body>
+<header>Scan Logs History</header>
+<main>
+  <a href="/">← Back to Scanner</a>
+  {% if logs|length == 0 %}
+    <p>No logs available yet.</p>
+  {% else %}
+  <table>
+    <thead>
+      <tr>
+        <th>Timestamp</th>
+        <th>Threat</th>
+        <th>Decoded Data</th>
+        <th>Process Info</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in logs %}
+      <tr>
+        <td>{{ entry.timestamp }}</td>
+        <td>
+          {% if entry.threat %}
+            <span class="severity-{{ entry.threat.severity }}">{{ entry.threat.cmd }}<br>From: {{ entry.threat.src }}</span>
+          {% else %}
+            No threat
+          {% endif %}
+        </td>
+        <td>
+          {% for key, val in entry.decoded_data.items() %}
+            <strong>{{ key }}</strong>:<br/>
+            <pre>Raw: {{ val.raw_payload }}</pre>
+            <pre>Decoded: {{ val.decoded_hex | join(', ') }}</pre>
+            <hr/>
+          {% endfor %}
+        </td>
+        <td>
+          <pre>{{ entry.process_info | tojson(indent=2) }}</pre>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</main>
+</body>
+</html>

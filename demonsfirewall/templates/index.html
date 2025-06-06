@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Network Threat Scanner</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #39ff14;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    h1, h5 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 8px #39ff14;
+    }
+    .btn-scan {
+      background-color: #39ff14;
+      color: #0d1117;
+      font-weight: 700;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+    .btn-scan:hover {
+      background-color: #2edc12;
+      color: #0d1117;
+    }
+    .btn-outline-success {
+      border-color: #39ff14;
+      color: #39ff14;
+      transition: all 0.3s ease;
+    }
+    .btn-outline-success:hover {
+      background-color: #39ff14;
+      color: #0d1117;
+      border-color: #2edc12;
+    }
+    .form-select, .form-control {
+      background-color: #161b22;
+      color: #39ff14;
+      border: 1px solid #39ff14;
+    }
+    .form-select option {
+      background-color: #161b22;
+      color: #39ff14;
+    }
+    .table-container {
+      max-height: 350px;
+      overflow-y: auto;
+      border: 1px solid #39ff14;
+      border-radius: 8px;
+      background-color: #161b22;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+    table {
+      color: #39ff14;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      width: 100%;
+    }
+    th {
+      border-bottom: 2px solid #39ff14;
+    }
+    td, th {
+      padding: 0.6rem 0.8rem;
+      vertical-align: top;
+    }
+    .section-title {
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+      border-bottom: 1px solid #39ff14;
+      padding-bottom: 0.3rem;
+    }
+    .no-data {
+      font-style: italic;
+      color: #7cff7c;
+    }
+    /* Scrollbar styling */
+    .table-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+      background-color: #2edc12;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Network Threat Scanner</h1>
+
+    <!-- Interface Selection and Scan Start Form -->
+    <form id="scan-form" method="post" action="/scan" class="mb-4" novalidate>
+      <div class="row g-3 align-items-center justify-content-center">
+        <label for="interface" class="col-auto col-form-label fw-bold">Select Network Interface:</label>
+        <div class="col-auto" style="min-width: 220px;">
+          <select name="interface" id="interface" class="form-select" required aria-required="true" aria-label="Select network interface">
+            {% for iface in interfaces %}
+              <option value="{{ iface }}">{{ iface }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-scan" aria-live="polite">Start Scan (10 seconds)</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- PCAP File Upload Form -->
+    <form id="upload-form" method="post" action="/upload" enctype="multipart/form-data" class="mb-5" novalidate>
+      <label for="pcap-upload" class="form-label fw-bold">Upload PCAP File for Analysis:</label>
+      <input
+        class="form-control"
+        type="file"
+        id="pcap-upload"
+        name="file"
+        accept=".pcap,.pcapng"
+        required
+        aria-required="true"
+        aria-describedby="fileHelp"
+      />
+      <div id="fileHelp" class="form-text mb-2">Accepted formats: .pcap, .pcapng</div>
+      <button type="submit" class="btn btn-scan">Upload & Analyze</button>
+    </form>
+
+    <!-- Scan Results -->
+    <div id="results" aria-live="polite" aria-atomic="true">
+      <section class="mb-4" aria-label="Threat Information">
+        <h5 class="section-title">Threat Info</h5>
+        <div id="threat-info" class="px-3">
+          <p class="no-data">No scan performed yet.</p>
+        </div>
+      </section>
+
+      <section class="mb-4" aria-label="Decoded Data">
+        <h5 class="section-title">Decoded Data</h5>
+        <div class="table-container" tabindex="0">
+          <table id="decoded-table" class="table table-dark table-striped table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Source (IP:Port)</th>
+                <th>Raw Payload (truncated)</th>
+                <th>Decoded Hex Strings</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="mb-4" aria-label="Process Information">
+        <h5 class="section-title">Process Info</h5>
+        <div class="table-container" tabindex="0">
+          <table id="process-table" class="table table-dark table-striped table-sm">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="text-center">
+        <p id="log-checksum" class="fst-italic" aria-live="polite"></p>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="/logs" class="btn btn-outline-success" role="button" aria-label="Download last scan log">Download Last Scan Log</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS bundle CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Elements
+    const scanForm = document.getElementById('scan-form');
+    const threatInfoDiv = document.getElementById('threat-info');
+    const decodedTableBody = document.querySelector('#decoded-table tbody');
+    const processTableBody = document.querySelector('#process-table tbody');
+    const logChecksumP = document.getElementById('log-checksum');
+
+    scanForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Show scanning message and clear previous results
+      threatInfoDiv.innerHTML = '<p>Scanning... Please wait 10 seconds.</p>';
+      decodedTableBody.innerHTML = '';
+      processTableBody.innerHTML = '';
+      logChecksumP.textContent = '';
+
+      const formData = new FormData(scanForm);
+
+      try {
+        const response = await fetch('/scan', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+          threatInfoDiv.innerHTML = `<p style="color: #ff5555;">Scan failed: ${escapeHtml(data.message)}</p>`;
+          return;
+        }
+
+        // Threat Info
+        if (data.threat) {
+          threatInfoDiv.innerHTML = `
+            <p><strong>⚠️ Threat Detected!</strong></p>
+            <p><strong>Source:</strong> ${escapeHtml(data.threat.src)}</p>
+            <p><strong>Command:</strong> ${escapeHtml(data.threat.cmd)}</p>
+            <p><strong>Severity:</strong> ${escapeHtml(data.threat.severity)}</p>
+          `;
+        } else {
+          threatInfoDiv.innerHTML = '<p>✅ No threats detected.</p>';
+        }
+
+        // Decoded Data Table
+        if (data.decoded_data && Object.keys(data.decoded_data).length) {
+          for (const [src, val] of Object.entries(data.decoded_data)) {
+            const rawTruncated = val.raw_payload.length > 100 ? val.raw_payload.substring(0, 100) + '...' : val.raw_payload;
+            const decodedHexList = val.decoded_hex.length
+              ? val.decoded_hex.map(d => `<li>${escapeHtml(d)}</li>`).join('')
+              : '<li><em>None</em></li>';
+
+            const row = `
+              <tr>
+                <td>${escapeHtml(src)}</td>
+                <td><pre style="white-space: pre-wrap; max-width: 350px; overflow-x: auto;">${escapeHtml(rawTruncated)}</pre></td>
+                <td><ul style="padding-left: 1rem; margin:0;">${decodedHexList}</ul></td>
+              </tr>
+            `;
+            decodedTableBody.insertAdjacentHTML('beforeend', row);
+          }
+        } else {
+          decodedTableBody.innerHTML = `<tr><td colspan="3" class="no-data">No decoded data available.</td></tr>`;
+        }
+
+        // Process Info Table
+        if (data.process_info && Object.keys(data.process_info).length) {
+          for (const [key, val] of Object.entries(data.process_info)) {
+            const row = `
+              <tr>
+                <td>${escapeHtml(key)}</td>
+                <td><pre style="white-space: pre-wrap; margin:0;">${escapeHtml(val)}</pre></td>
+              </tr>
+            `;
+            processTableBody.insertAdjacentHTML('beforeend', row);
+          }
+        } else {
+          processTableBody.innerHTML = `<tr><td colspan="2" class="no-data">No process info available.</td></tr>`;
+        }
+
+        // Log checksum
+        logChecksumP.textContent = `Log checksum (SHA-256): ${data.log_checksum || 'N/A'}`;
+
+      } catch (err) {
+        threatInfoDiv.innerHTML = `<p style="color: #ff5555;">Error: ${escapeHtml(err.message)}</p>`;
+      }
+    });
+
+    // Escape HTML utility to prevent XSS in output
+    function escapeHtml(text) {
+      if (!text) return '';
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;',
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+  </script>
+</body>
+</html>

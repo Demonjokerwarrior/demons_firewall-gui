@@ -1,0 +1,20 @@
+{
+    "timestamp": "2025-06-04T22:53:38.355586",
+    "threat": {
+        "cmd": "pwd",
+        "src": "127.0.0.1:9999",
+        "severity": "Medium"
+    },
+    "decoded_data": {
+        "127.0.0.1:9999": {
+            "raw_payload": "\"707764\"",
+            "decoded_hex": [
+                "pwd"
+            ]
+        }
+    },
+    "process_info": {
+        "pid": "15000",
+        "details": "COMMAND   PID        USER  FD   TYPE DEVICE SIZE/OFF     NODE NAME\npython3 15000 devilsdemon cwd    DIR  259,2     4096 14694735 /home/devilsdemon/demons-reveshell/demon/payloads\npython3 15000 devilsdemon rtd    DIR  259,2     4096        2 /\npython3 15000 devilsdemon txt    REG  259,2  6808048 11272543 /usr/bin/python3.13\npython3 15000 devilsdemon mem    REG  259,2   367708 13901661 /usr/lib/locale/aa_DJ.utf8/LC_CTYPE\npython3 15000 devilsdemon mem    REG  259,2  2003408 11280068 /usr/lib/x86_64-linux-gnu/libc.so.6\npython3 15000 devilsdemon mem    REG  259,2   178272 11276012 /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\npython3 15000 devilsdemon mem    REG  259,2   125376 11274625 /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\npython3 15000 devilsdemon mem    REG  259,2   977112 11280071 /usr/lib/x86_64-linux-gnu/libm.so.6\npython3 15000 devilsdemon mem    REG  259,2    35432 11288687 /usr/lib/python3.13/lib-dynload/termios.cpython-313-x86_64-linux-gnu.so\npython3 15000 devilsdemon mem    REG  259,2    27028 11280057 /usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache\npython3 15000 devilsdemon mem    REG  259,2   225600 11280065 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\npython3 15000 devilsdemon   0u   CHR  136,3      0t0        6 /dev/pts/3\npython3 15000 devilsdemon   1u   CHR  136,3      0t0        6 /dev/pts/3\npython3 15000 devilsdemon   2u   CHR  136,3      0t0        6 /dev/pts/3\npython3 15000 devilsdemon   3u  IPv4  82154      0t0      TCP localhost:34294->localhost:9999 (ESTABLISHED)\npython3 15000 devilsdemon   4r  FIFO   0,15      0t0    79538 pipe\npython3 15000 devilsdemon   7r  FIFO   0,15      0t0    79539 pipe"
+    }
+}

@@ -1,0 +1,70 @@
+[
+    {
+        "timestamp": "2025-06-04T23:04:08.227783",
+        "threat": {
+            "cmd": "ls",
+            "src": "127.0.0.1:9999",
+            "severity": "Medium"
+        },
+        "decoded_data": {
+            "127.0.0.1:9999": {
+                "raw_payload": "\"6c73\"",
+                "decoded_hex": [
+                    "ls"
+                ]
+            }
+        },
+        "process_info": {
+            "pid": "19953",
+            "details": "COMMAND   PID        USER  FD   TYPE DEVICE SIZE/OFF     NODE NAME\npython3 19953 devilsdemon cwd    DIR  259,2     4096 14694735 /home/devilsdemon/demons-reveshell/demon/payloads\npython3 19953 devilsdemon rtd    DIR  259,2     4096        2 /\npython3 19953 devilsdemon txt    REG  259,2  6808048 11272543 /usr/bin/python3.13\npython3 19953 devilsdemon mem    REG  259,2   367708 13901661 /usr/lib/locale/aa_DJ.utf8/LC_CTYPE\npython3 19953 devilsdemon mem    REG  259,2  2003408 11280068 /usr/lib/x86_64-linux-gnu/libc.so.6\npython3 19953 devilsdemon mem    REG  259,2   178272 11276012 /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\npython3 19953 devilsdemon mem    REG  259,2   125376 11274625 /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\npython3 19953 devilsdemon mem    REG  259,2   977112 11280071 /usr/lib/x86_64-linux-gnu/libm.so.6\npython3 19953 devilsdemon mem    REG  259,2    35432 11288687 /usr/lib/python3.13/lib-dynload/termios.cpython-313-x86_64-linux-gnu.so\npython3 19953 devilsdemon mem    REG  259,2    27028 11280057 /usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache\npython3 19953 devilsdemon mem    REG  259,2   225600 11280065 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\npython3 19953 devilsdemon   0u   CHR  136,3      0t0        6 /dev/pts/3\npython3 19953 devilsdemon   1u   CHR  136,3      0t0        6 /dev/pts/3\npython3 19953 devilsdemon   2u   CHR  136,3      0t0        6 /dev/pts/3\npython3 19953 devilsdemon   3u  IPv4 102737      0t0      TCP localhost:38158->localhost:9999 (ESTABLISHED)\npython3 19953 devilsdemon   4r  FIFO   0,15      0t0    96776 pipe\npython3 19953 devilsdemon   6r  FIFO   0,15      0t0    96777 pipe"
+        }
+    },
+    {
+        "timestamp": "2025-06-04T23:06:05.123139",
+        "threat": {
+            "cmd": "ls",
+            "src": "127.0.0.1:9999",
+            "severity": "Medium"
+        },
+        "decoded_data": {
+            "127.0.0.1:9999": {
+                "raw_payload": "\"6c73\"",
+                "decoded_hex": [
+                    "ls"
+                ]
+            }
+        },
+        "process_info": {
+            "pid": "20840",
+            "details": "COMMAND   PID        USER  FD   TYPE DEVICE SIZE/OFF     NODE NAME\npython3 20840 devilsdemon cwd    DIR  259,2     4096 14694735 /home/devilsdemon/demons-reveshell/demon/payloads\npython3 20840 devilsdemon rtd    DIR  259,2     4096        2 /\npython3 20840 devilsdemon txt    REG  259,2  6808048 11272543 /usr/bin/python3.13\npython3 20840 devilsdemon mem    REG  259,2   367708 13901661 /usr/lib/locale/aa_DJ.utf8/LC_CTYPE\npython3 20840 devilsdemon mem    REG  259,2  2003408 11280068 /usr/lib/x86_64-linux-gnu/libc.so.6\npython3 20840 devilsdemon mem    REG  259,2   178272 11276012 /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\npython3 20840 devilsdemon mem    REG  259,2   125376 11274625 /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\npython3 20840 devilsdemon mem    REG  259,2   977112 11280071 /usr/lib/x86_64-linux-gnu/libm.so.6\npython3 20840 devilsdemon mem    REG  259,2    35432 11288687 /usr/lib/python3.13/lib-dynload/termios.cpython-313-x86_64-linux-gnu.so\npython3 20840 devilsdemon mem    REG  259,2    27028 11280057 /usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache\npython3 20840 devilsdemon mem    REG  259,2   225600 11280065 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\npython3 20840 devilsdemon   0u   CHR  136,3      0t0        6 /dev/pts/3\npython3 20840 devilsdemon   1u   CHR  136,3      0t0        6 /dev/pts/3\npython3 20840 devilsdemon   2u   CHR  136,3      0t0        6 /dev/pts/3\npython3 20840 devilsdemon   3u  IPv4 104220      0t0      TCP localhost:36990->localhost:9999 (ESTABLISHED)\npython3 20840 devilsdemon   4r  FIFO   0,15      0t0   104268 pipe\npython3 20840 devilsdemon   6r  FIFO   0,15      0t0   104269 pipe"
+        }
+    },
+    {
+        "timestamp": "2025-06-05T00:08:02.112416",
+        "threat": {
+            "cmd": "ls",
+            "src": "127.0.0.1:9990",
+            "severity": "Medium"
+        },
+        "decoded_data": {
+            "127.0.0.1:54032": {
+                "raw_payload": "GET /hook.js?BEEFHOOK=M2Drcl2Eq2xBh0cmkdBGuS31VR3LQnoDdevCvAad0NjAG1tdXO26mNO2gjFWzbLFvzQmh19Ommv1d1hP&_=1749105635652 HTTP/1.1\r\nHost: 127.0.0.1:3000\r\nConnection: keep-alive\r\nsec-ch-ua-platform: \"Linux\"\r\nX-Requested-With: XMLHttpRequest\r\nUser-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36\r\nAccept: text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01\r\nsec-ch-ua: \"Brave\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"\r\nsec-ch-ua-mobile: ?0\r\nSec-GPC: 1\r\nAccept-Language: en-US,en;q=0.9\r\nSec-Fetch-Site: same-origin\r\nSec-Fetch-Mode: cors\r\nSec-Fetch-Dest: empty\r\nReferer: http://127.0.0.1:3000/demos/basic.html\r\nAccept-Encoding: gzip, deflate, br, zstd\r\nCookie: BEEFHOOK=M2Drcl2Eq2xBh0cmkdBGuS31VR3LQnoDdevCvAad0NjAG1tdXO26mNO2gjFWzbLFvzQmh19Ommv1d1hP; BEEFSESSION=edab4b712134427c03acb46c891192d860b3c39e5348e0c7f245a3d23c6473737264adc4dfa87ec1c8f3f3b23724dda076cb54edd8053557a42f295c927c30c6a11cd855f48a9555b275a865c4f37738\r\n\r\n",
+                "decoded_hex": []
+            },
+            "127.0.0.1:3000": {
+                "raw_payload": "HTTP/1.1 200 OK\r\nServer: Apache/2.2.3 (CentOS)\r\nContent-Type: text/javascript\r\nPragma: no-cache\r\nCache-Control: no-cache\r\nExpires: 0\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Methods: POST, GET\r\nContent-Length: 0\r\nConnection: keep-alive\r\n\r\n",
+                "decoded_hex": []
+            },
+            "127.0.0.1:9990": {
+                "raw_payload": "\"6c73\"",
+                "decoded_hex": [
+                    "ls"
+                ]
+            }
+        },
+        "process_info": {
+            "pid": "62276",
+            "details": "COMMAND   PID        USER  FD   TYPE DEVICE SIZE/OFF     NODE NAME\npython3 62276 devilsdemon cwd    DIR  259,2     4096 14694705 /home/devilsdemon/demons-reveshell/demon\npython3 62276 devilsdemon rtd    DIR  259,2     4096        2 /\npython3 62276 devilsdemon txt    REG  259,2  6808048 11272543 /usr/bin/python3.13\npython3 62276 devilsdemon mem    REG  259,2   198832 11276088 /usr/lib/x86_64-linux-gnu/liblzma.so.5.8.1\npython3 62276 devilsdemon mem    REG  259,2   825336 11278157 /usr/lib/x86_64-linux-gnu/libzstd.so.1.5.7\npython3 62276 devilsdemon mem    REG  259,2  6492736 11318388 /usr/lib/x86_64-linux-gnu/libcrypto.so.3\npython3 62276 devilsdemon mem    REG  259,2    40848 11288664 /usr/lib/python3.13/lib-dynload/_lzma.cpython-313-x86_64-linux-gnu.so\npython3 62276 devilsdemon mem    REG  259,2   141224 11276856 /usr/lib/x86_64-linux-gnu/ossl-modules/legacy.so\npython3 62276 devilsdemon mem    REG  259,2   220464 11276934 /usr/lib/x86_64-linux-gnu/libtinfo.so.6.5\npython3 62276 devilsdemon mem    REG  259,2   362728 11278468 /usr/lib/x86_64-linux-gnu/libreadline.so.8.2\npython3 62276 devilsdemon mem    REG  259,2    74688 11272530 /usr/lib/x86_64-linux-gnu/libbz2.so.1.0.4\npython3 62276 devilsdemon mem    REG  259,2    64176 11277502 /usr/lib/python3.13/lib-dynload/_hashlib.cpython-313-x86_64-linux-gnu.so\npython3 62276 devilsdemon mem    REG  259,2   367708 13901661 /usr/lib/locale/aa_DJ.utf8/LC_CTYPE\npython3 62276 devilsdemon mem    REG  259,2  2003408 11280068 /usr/lib/x86_64-linux-gnu/libc.so.6\npython3 62276 devilsdemon mem    REG  259,2   178272 11276012 /usr/lib/x86_64-linux-gnu/libexpat.so.1.10.2\npython3 62276 devilsdemon mem    REG  259,2   125376 11274625 /usr/lib/x86_64-linux-gnu/libz.so.1.3.1\npython3 62276 devilsdemon mem    REG  259,2   977112 11280071 /usr/lib/x86_64-linux-gnu/libm.so.6\npython3 62276 devilsdemon mem    REG  259,2    27856 11288642 /usr/lib/python3.13/lib-dynload/_bz2.cpython-313-x86_64-linux-gnu.so\npython3 62276 devilsdemon mem    REG  259,2    40488 11288685 /usr/lib/python3.13/lib-dynload/readline.cpython-313-x86_64-linux-gnu.so\npython3 62276 devilsdemon mem    REG  259,2    27028 11280057 /usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache\npython3 62276 devilsdemon mem    REG  259,2   225600 11280065 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2\npython3 62276 devilsdemon   0u   CHR  136,6      0t0        9 /dev/pts/6\npython3 62276 devilsdemon   1u   CHR  136,6      0t0        9 /dev/pts/6\npython3 62276 devilsdemon   2u   CHR  136,6      0t0        9 /dev/pts/6\npython3 62276 devilsdemon   3u  IPv4 235406      0t0      TCP *:9990 (LISTEN)\npython3 62276 devilsdemon   4u  IPv4 235407      0t0      TCP localhost:9990->localhost:55530 (ESTABLISHED)"
+        }
+    }
+]
