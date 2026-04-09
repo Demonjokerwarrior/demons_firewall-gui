@@ -3,110 +3,702 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Scan Logs</title>
+<title>Scan Logs · Advanced Threat Monitor</title>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-  body {
-    background-color: #121212;
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0; padding: 0;
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #e0e0e0;
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+
   header {
-    background-color: #1f1f1f;
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #333;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-title i {
+    color: #4caf50;
+    font-size: 1.5rem;
+  }
+
+  .header-title h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #4caf50, #8bc34a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stats-container {
+    display: flex;
+    gap: 15px;
+  }
+
+  .stat-card {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #3a3a3a;
+  }
+
+  .stat-card i {
+    font-size: 1.2rem;
+  }
+
+  .stat-card.high i { color: #e53935; }
+  .stat-card.medium i { color: #ffb300; }
+  .stat-card.low i { color: #4caf50; }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.5rem;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: rgba(10, 10, 10, 0.5);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 10px;
+  }
+
+  .nav-link {
+    color: #4caf50;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #1e1e1e;
+    border-radius: 6px;
+    border: 1px solid #3a3a3a;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+  }
+
+  .nav-link:hover {
+    background: #2a2a2a;
+    border-color: #4caf50;
+  }
+
+  .filter-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    position: relative;
+  }
+
+  .search-box i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .search-box input {
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 7px 10px 7px 32px;
+    color: #fff;
+    font-size: 0.85rem;
+    width: 220px;
+    transition: all 0.2s;
+  }
+
+  .search-box input:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  }
+
+  .filter-buttons {
+    display: flex;
+    gap: 6px;
+  }
+
+  .filter-btn {
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    color: #aaa;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover {
+    background: #2a2a2a;
+  }
+
+  .filter-btn.active {
+    border-color: #4caf50;
     color: #4caf50;
   }
-  main {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 1rem;
-    background-color: #222;
-    border-radius: 8px;
-    overflow-x: auto;
+
+  .filter-btn.high.active { border-color: #e53935; color: #e53935; }
+  .filter-btn.medium.active { border-color: #ffb300; color: #ffb300; }
+
+  .table-wrapper {
+    flex: 1;
+    overflow: auto;
+    padding: 0 1.5rem 1.5rem 1.5rem;
   }
+
+  .table-container {
+    background: #1a1a1a;
+    border-radius: 12px;
+    border: 1px solid #333;
+    overflow: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    height: 100%;
+    max-height: calc(100vh - 180px);
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 900px;
   }
-  th, td {
-    border: 1px solid #444;
-    padding: 0.6rem;
+
+  th {
+    background: #252525;
+    padding: 0.8rem 0.8rem;
     text-align: left;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #aaa;
+    border-bottom: 2px solid #3a3a3a;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #2a2a2a;
     vertical-align: top;
   }
-  th {
-    background-color: #333;
+
+  tr:hover {
+    background: rgba(255,255,255,0.02);
   }
-  .severity-High {
+
+  .timestamp {
+    color: #888;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .threat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .severity-Critical {
+    background: rgba(229, 57, 53, 0.15);
     color: #e53935;
-    font-weight: bold;
+    border-left: 3px solid #e53935;
   }
+
+  .severity-High {
+    background: rgba(229, 57, 53, 0.1);
+    color: #e57373;
+    border-left: 3px solid #e53935;
+  }
+
   .severity-Medium {
+    background: rgba(255, 179, 0, 0.1);
     color: #ffb300;
-    font-weight: bold;
+    border-left: 3px solid #ffb300;
   }
+
+  .severity-Low {
+    background: rgba(76, 175, 80, 0.1);
+    color: #81c784;
+    border-left: 3px solid #4caf50;
+  }
+
+  .threat-info {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .threat-cmd {
+    font-family: 'Monaco', 'Menlo', monospace;
+    background: #000;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+
+  .threat-src {
+    color: #888;
+    font-size: 0.7rem;
+    margin-top: 3px;
+  }
+
+  .data-section {
+    margin-bottom: 8px;
+  }
+
+  .data-label {
+    font-weight: 600;
+    color: #aaa;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+  }
+
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;
-    background-color: #000;
-    padding: 0.5rem;
-    border-radius: 4px;
-    max-height: 150px;
+    background: #0d0d0d;
+    padding: 6px 8px;
+    border-radius: 6px;
+    max-height: 80px;
     overflow-y: auto;
+    font-family: 'Monaco', 'Menlo', 'Cascadia Code', monospace;
+    font-size: 0.7rem;
+    border: 1px solid #2a2a2a;
+    margin: 3px 0;
   }
-  a {
+
+  .process-info {
+    font-family: 'Monaco', 'Menlo', monospace;
+    background: #0d0d0d;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    max-height: 100px;
+    overflow-y: auto;
+    border: 1px solid #2a2a2a;
+  }
+
+  .process-info pre {
+    margin: 0;
+    background: transparent;
+    padding: 0;
+    border: none;
+    max-height: none;
+  }
+
+  .no-threat {
     color: #4caf50;
-    display: inline-block;
-    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 300px;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .empty-state i {
+    font-size: 3rem;
+    color: #4caf50;
+    opacity: 0.5;
+    margin-bottom: 0.8rem;
+  }
+
+  .empty-state p {
+    color: #888;
+    font-size: 1rem;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 0.5rem;
+    color: #555;
+    border-top: 1px solid #2a2a2a;
+    font-size: 0.7rem;
+    flex-shrink: 0;
   }
 </style>
 </head>
 <body>
-<header>Scan Logs History</header>
-<main>
-  <a href="/">← Back to Scanner</a>
-  {% if logs|length == 0 %}
-    <p>No logs available yet.</p>
-  {% else %}
-  <table>
-    <thead>
-      <tr>
-        <th>Timestamp</th>
-        <th>Threat</th>
-        <th>Decoded Data</th>
-        <th>Process Info</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for entry in logs %}
-      <tr>
-        <td>{{ entry.timestamp }}</td>
-        <td>
-          {% if entry.threat %}
-            <span class="severity-{{ entry.threat.severity }}">{{ entry.threat.cmd }}<br>From: {{ entry.threat.src }}</span>
-          {% else %}
-            No threat
-          {% endif %}
-        </td>
-        <td>
-          {% for key, val in entry.decoded_data.items() %}
-            <strong>{{ key }}</strong>:<br/>
-            <pre>Raw: {{ val.raw_payload }}</pre>
-            <pre>Decoded: {{ val.decoded_hex | join(', ') }}</pre>
-            <hr/>
-          {% endfor %}
-        </td>
-        <td>
-          <pre>{{ entry.process_info | tojson(indent=2) }}</pre>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endif %}
-</main>
+<header>
+  <div class="header-title">
+    <i class="fas fa-shield-hal"></i>
+    <h1>Scan Logs History</h1>
+  </div>
+  <div class="stats-container" id="statsContainer">
+    <!-- Stats will be populated by JavaScript -->
+  </div>
+</header>
+
+<div class="controls-bar">
+  <div class="nav-links">
+    <a href="/" class="nav-link">
+      <i class="fas fa-arrow-left"></i> Back
+    </a>
+    <a href="#" class="nav-link" id="exportLogsBtn">
+      <i class="fas fa-download"></i> Export
+    </a>
+    <a href="#" class="nav-link" id="clearLogsBtn">
+      <i class="fas fa-trash-alt"></i> Clear
+    </a>
+  </div>
+  <div class="filter-section">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search logs..." />
+    </div>
+    <div class="filter-buttons">
+      <button class="filter-btn active" data-filter="all">
+        <i class="fas fa-list"></i> All
+      </button>
+      <button class="filter-btn high" data-filter="Critical">
+        <i class="fas fa-exclamation-triangle"></i> Critical
+      </button>
+      <button class="filter-btn high" data-filter="High">
+        <i class="fas fa-arrow-up"></i> High
+      </button>
+      <button class="filter-btn medium" data-filter="Medium">
+        <i class="fas fa-minus"></i> Medium
+      </button>
+      <button class="filter-btn" data-filter="Low">
+        <i class="fas fa-arrow-down"></i> Low
+      </button>
+      <button class="filter-btn" data-filter="none">
+        <i class="fas fa-check-circle"></i> Clean
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="table-wrapper">
+  <div class="table-container">
+    {% if logs|length == 0 %}
+    <div class="empty-state">
+      <i class="fas fa-clipboard-list"></i>
+      <p>No scan logs available yet.</p>
+      <p style="font-size: 0.8rem; margin-top: 0.3rem;">Run a scan to see results here.</p>
+    </div>
+    {% else %}
+    <table id="logsTable">
+      <thead>
+        <tr>
+          <th style="width: 12%"><i class="far fa-clock"></i> Timestamp</th>
+          <th style="width: 22%"><i class="fas fa-bug"></i> Threat Details</th>
+          <th style="width: 38%"><i class="fas fa-code"></i> Decoded Data</th>
+          <th style="width: 28%"><i class="fas fa-microchip"></i> Process Info</th>
+        </tr>
+      </thead>
+      <tbody id="logsTableBody">
+        {% for entry in logs %}
+        <tr data-severity="{{ entry.threat.severity if entry.threat else 'none' }}" data-searchable="{{ entry.threat.cmd if entry.threat else '' }} {{ entry.threat.src if entry.threat else '' }} {{ entry.process_info|tojson|lower }}">
+          <td>
+            <div class="timestamp">
+              <i class="far fa-calendar-alt" style="margin-right: 4px;"></i>
+              {{ entry.timestamp }}
+            </div>
+          </td>
+          <td>
+            {% if entry.threat %}
+            <div class="threat-badge severity-{{ entry.threat.severity }}">
+              <i class="fas fa-skull" style="font-size: 0.6rem;"></i>
+              {{ entry.threat.severity }}
+            </div>
+            <div class="threat-info">
+              <span class="threat-cmd">{{ entry.threat.cmd }}</span>
+              <div class="threat-src">
+                <i class="fas fa-location-dot" style="margin-right: 3px;"></i>
+                {{ entry.threat.src }}
+              </div>
+            </div>
+            {% else %}
+            <div class="no-threat">
+              <i class="fas fa-shield"></i> No threat
+            </div>
+            {% endif %}
+          </td>
+          <td>
+            {% for key, val in entry.decoded_data.items() %}
+            <div class="data-section">
+              <div class="data-label">
+                <i class="fas fa-key"></i> {{ key }}
+              </div>
+              <pre><span style="color: #666;">Raw:</span> {{ val.raw_payload }}</pre>
+              <pre><span style="color: #666;">Decoded:</span> {{ val.decoded_hex | join(', ') }}</pre>
+            </div>
+            {% endfor %}
+          </td>
+          <td>
+            <div class="process-info">
+              <pre>{{ entry.process_info | tojson(indent=2) }}</pre>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
+
+<footer class="footer">
+  <p><i class="far fa-copyright"></i> 2025 Advanced Threat Monitor · Real-time protection active</p>
+</footer>
+
+<script>
+  (function() {
+    'use strict';
+
+    // Calculate and display statistics
+    function updateStats() {
+      const rows = document.querySelectorAll('#logsTableBody tr');
+      const stats = {
+        total: rows.length,
+        critical: 0,
+        high: 0,
+        medium: 0,
+        low: 0,
+        none: 0
+      };
+
+      rows.forEach(row => {
+        const severity = row.dataset.severity;
+        if (severity === 'Critical') stats.critical++;
+        else if (severity === 'High') stats.high++;
+        else if (severity === 'Medium') stats.medium++;
+        else if (severity === 'Low') stats.low++;
+        else stats.none++;
+      });
+
+      const statsContainer = document.getElementById('statsContainer');
+      if (statsContainer) {
+        statsContainer.innerHTML = `
+          <div class="stat-card high">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div class="stat-info">
+              <span class="stat-label">Critical/High</span>
+              <span class="stat-value" style="color: #e53935;">${stats.critical + stats.high}</span>
+            </div>
+          </div>
+          <div class="stat-card medium">
+            <i class="fas fa-minus-circle"></i>
+            <div class="stat-info">
+              <span class="stat-label">Medium</span>
+              <span class="stat-value" style="color: #ffb300;">${stats.medium}</span>
+            </div>
+          </div>
+          <div class="stat-card low">
+            <i class="fas fa-check-circle"></i>
+            <div class="stat-info">
+              <span class="stat-label">Low/Clean</span>
+              <span class="stat-value" style="color: #4caf50;">${stats.low + stats.none}</span>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Filter functionality
+    function filterTable(filterValue) {
+      const rows = document.querySelectorAll('#logsTableBody tr');
+      const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+
+      rows.forEach(row => {
+        const severity = row.dataset.severity;
+        const searchable = row.dataset.searchable || '';
+
+        let showByFilter = false;
+        if (filterValue === 'all') {
+          showByFilter = true;
+        } else if (filterValue === 'none') {
+          showByFilter = (severity === 'none' || !severity);
+        } else {
+          showByFilter = (severity === filterValue);
+        }
+
+        let showBySearch = true;
+        if (searchTerm) {
+          showBySearch = searchable.includes(searchTerm);
+        }
+
+        row.style.display = (showByFilter && showBySearch) ? '' : 'none';
+      });
+
+      // Update active filter button
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.filter === filterValue) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    // Export logs functionality
+    function exportLogs() {
+      const rows = document.querySelectorAll('#logsTableBody tr');
+      const logs = [];
+
+      rows.forEach(row => {
+        const timestamp = row.querySelector('.timestamp')?.innerText.trim() || '';
+        const severity = row.dataset.severity;
+        const threatCmd = row.querySelector('.threat-cmd')?.innerText.trim() || 'No threat';
+        const threatSrc = row.querySelector('.threat-src')?.innerText.trim() || '';
+        const processInfo = row.querySelector('.process-info pre')?.innerText.trim() || '';
+
+        logs.push({
+          timestamp,
+          severity,
+          threat: { cmd: threatCmd, src: threatSrc },
+          process_info: processInfo
+        });
+      });
+
+      const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `scan_logs_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Clear logs (demo - would need backend endpoint)
+    function clearLogs() {
+      if (confirm('Are you sure you want to clear all scan logs? This action cannot be undone.')) {
+        alert('Logs cleared. (Demo mode - implement backend endpoint for production)');
+      }
+    }
+
+    // Initialize event listeners
+    function init() {
+      updateStats();
+
+      // Filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterTable(btn.dataset.filter);
+        });
+      });
+
+      // Search input
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', () => {
+          const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+          filterTable(activeFilter);
+        });
+      }
+
+      // Export button
+      const exportBtn = document.getElementById('exportLogsBtn');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          exportLogs();
+        });
+      }
+
+      // Clear button
+      const clearBtn = document.getElementById('clearLogsBtn');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          clearLogs();
+        });
+      }
+
+      // Make rows searchable by updating dataset
+      document.querySelectorAll('#logsTableBody tr').forEach(row => {
+        const text = Array.from(row.querySelectorAll('td')).map(td => td.innerText).join(' ').toLowerCase();
+        row.dataset.searchable = text;
+      });
+    }
+
+    // Run initialization
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
 </body>
 </html>
