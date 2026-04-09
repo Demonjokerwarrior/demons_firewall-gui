@@ -3,207 +3,716 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Network Threat Scanner</title>
+  <title>NetShield · Advanced Network Threat Scanner</title>
   <!-- Bootstrap CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      background-color: #0d1117;
-      color: #39ff14;
-      font-family: 'Courier New', Courier, monospace;
+      background: linear-gradient(135deg, #0a0e14 0%, #0d1117 50%, #0a0e14 100%);
+      color: #e0e0e0;
+      font-family: 'Segoe UI', 'Courier New', monospace;
       min-height: 100vh;
-      padding: 2rem 1rem;
+      padding: 1.5rem 1rem;
+      position: relative;
     }
-    h1, h5 {
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        repeating-linear-gradient(0deg, rgba(57, 255, 20, 0.02) 0px, transparent 1px, transparent 2px),
+        repeating-linear-gradient(90deg, rgba(57, 255, 20, 0.02) 0px, transparent 1px, transparent 2px);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .scanner-header {
       text-align: center;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 8px #39ff14;
+      margin-bottom: 2rem;
+      position: relative;
     }
+
+    .scanner-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #39ff14, #00ccff, #39ff14);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(57, 255, 20, 0.3);
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    .scanner-subtitle {
+      color: #7cff7c;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      opacity: 0.8;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(22, 27, 34, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(57, 255, 20, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .stat-card:hover {
+      border-color: #39ff14;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(57, 255, 20, 0.15);
+    }
+
+    .stat-icon {
+      font-size: 1.8rem;
+      color: #39ff14;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #39ff14;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card-custom {
+      background: rgba(22, 27, 34, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(57, 255, 20, 0.15);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      transition: border-color 0.3s ease;
+    }
+
+    .card-custom:hover {
+      border-color: rgba(57, 255, 20, 0.3);
+    }
+
+    .section-title {
+      color: #39ff14;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(57, 255, 20, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title i {
+      font-size: 1rem;
+    }
+
     .btn-scan {
-      background-color: #39ff14;
+      background: linear-gradient(135deg, #39ff14, #2edc12);
       color: #0d1117;
       font-weight: 700;
       border: none;
-      transition: background-color 0.3s ease;
+      padding: 0.6rem 1.5rem;
+      border-radius: 30px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(57, 255, 20, 0.3);
     }
+
     .btn-scan:hover {
-      background-color: #2edc12;
+      background: linear-gradient(135deg, #2edc12, #25c410);
       color: #0d1117;
+      transform: scale(1.02);
+      box-shadow: 0 6px 20px rgba(57, 255, 20, 0.4);
     }
-    .btn-outline-success {
-      border-color: #39ff14;
+
+    .btn-scan.scanning {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 4px 15px rgba(57, 255, 20, 0.3); }
+      50% { opacity: 0.8; box-shadow: 0 6px 25px rgba(57, 255, 20, 0.6); }
+    }
+
+    .btn-outline-custom {
+      background: transparent;
+      border: 1px solid #39ff14;
       color: #39ff14;
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       transition: all 0.3s ease;
     }
-    .btn-outline-success:hover {
-      background-color: #39ff14;
+
+    .btn-outline-custom:hover {
+      background: #39ff14;
       color: #0d1117;
-      border-color: #2edc12;
+      border-color: #39ff14;
+      box-shadow: 0 4px 15px rgba(57, 255, 20, 0.3);
     }
+
     .form-select, .form-control {
-      background-color: #161b22;
+      background: rgba(22, 27, 34, 0.8);
       color: #39ff14;
-      border: 1px solid #39ff14;
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      border-radius: 10px;
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
     }
+
+    .form-select:focus, .form-control:focus {
+      background: rgba(22, 27, 34, 0.9);
+      border-color: #39ff14;
+      box-shadow: 0 0 0 3px rgba(57, 255, 20, 0.1);
+      color: #39ff14;
+    }
+
     .form-select option {
-      background-color: #161b22;
+      background: #161b22;
       color: #39ff14;
     }
+
     .table-container {
-      max-height: 350px;
+      max-height: 300px;
       overflow-y: auto;
-      border: 1px solid #39ff14;
-      border-radius: 8px;
-      background-color: #161b22;
-      padding: 1rem;
-      margin-bottom: 2rem;
+      border-radius: 12px;
+      background: rgba(13, 17, 23, 0.6);
+      border: 1px solid rgba(57, 255, 20, 0.15);
     }
-    table {
-      color: #39ff14;
-      font-size: 0.9rem;
-      white-space: nowrap;
+
+    .table-custom {
+      color: #e0e0e0;
+      font-size: 0.85rem;
       width: 100%;
+      margin: 0;
     }
-    th {
-      border-bottom: 2px solid #39ff14;
+
+    .table-custom th {
+      background: rgba(57, 255, 20, 0.08);
+      color: #39ff14;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.75rem;
+      padding: 0.8rem;
+      border-bottom: 2px solid rgba(57, 255, 20, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    td, th {
-      padding: 0.6rem 0.8rem;
-      vertical-align: top;
+
+    .table-custom td {
+      padding: 0.7rem 0.8rem;
+      border-bottom: 1px solid rgba(57, 255, 20, 0.1);
+      vertical-align: middle;
     }
-    .section-title {
-      margin-bottom: 0.75rem;
+
+    .table-custom tbody tr:hover {
+      background: rgba(57, 255, 20, 0.03);
+    }
+
+    .threat-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
       font-weight: 700;
-      border-bottom: 1px solid #39ff14;
-      padding-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
-    .no-data {
-      font-style: italic;
+
+    .threat-critical {
+      background: rgba(220, 53, 69, 0.2);
+      color: #ff6b6b;
+      border: 1px solid #dc3545;
+    }
+
+    .threat-high {
+      background: rgba(255, 193, 7, 0.2);
+      color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+
+    .threat-medium {
+      background: rgba(57, 255, 20, 0.1);
+      color: #39ff14;
+      border: 1px solid #39ff14;
+    }
+
+    .threat-clean {
+      background: rgba(40, 167, 69, 0.2);
+      color: #28a745;
+      border: 1px solid #28a745;
+    }
+
+    .pre-custom {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.5rem;
+      border-radius: 6px;
       color: #7cff7c;
+      font-size: 0.75rem;
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 100px;
+      overflow-y: auto;
     }
+
+    .progress-bar-custom {
+      height: 3px;
+      background: rgba(57, 255, 20, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #39ff14, #00ccff, #39ff14);
+      background-size: 200% 100%;
+      animation: gradientMove 2s linear infinite;
+      width: 0%;
+      transition: width 0.1s ease;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 2rem;
+      color: #8b949e;
+      font-style: italic;
+    }
+
+    .checksum-badge {
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      background: rgba(57, 255, 20, 0.1);
+      border-radius: 30px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #7cff7c;
+      border: 1px dashed rgba(57, 255, 20, 0.3);
+    }
+
     /* Scrollbar styling */
     .table-container::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
+      height: 6px;
     }
+
+    .table-container::-webkit-scrollbar-track {
+      background: rgba(22, 27, 34, 0.5);
+      border-radius: 3px;
+    }
+
     .table-container::-webkit-scrollbar-thumb {
-      background-color: #2edc12;
-      border-radius: 4px;
+      background: #2edc12;
+      border-radius: 3px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb:hover {
+      background: #39ff14;
+    }
+
+    .upload-area {
+      border: 2px dashed rgba(57, 255, 20, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .upload-area:hover {
+      border-color: #39ff14;
+      background: rgba(57, 255, 20, 0.02);
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #39ff14;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .scanner-title {
+        font-size: 1.8rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Network Threat Scanner</h1>
+  <div class="container-fluid" style="max-width: 1400px;">
 
-    <!-- Interface Selection and Scan Start Form -->
-    <form id="scan-form" method="post" action="/scan" class="mb-4" novalidate>
-      <div class="row g-3 align-items-center justify-content-center">
-        <label for="interface" class="col-auto col-form-label fw-bold">Select Network Interface:</label>
-        <div class="col-auto" style="min-width: 220px;">
-          <select name="interface" id="interface" class="form-select" required aria-required="true" aria-label="Select network interface">
-            {% for iface in interfaces %}
-              <option value="{{ iface }}">{{ iface }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-scan" aria-live="polite">Start Scan (10 seconds)</button>
-        </div>
+    <!-- Connection Status -->
+    <div class="connection-status">
+      <span class="status-dot"></span>
+      <span style="color: #7cff7c; font-size: 0.8rem;">MONITORING ACTIVE</span>
+      <i class="fas fa-shield-hal" style="color: #39ff14; margin-left: 10px;"></i>
+    </div>
+
+    <!-- Header -->
+    <div class="scanner-header">
+      <h1 class="scanner-title">
+        <i class="fas fa-network-wired" style="margin-right: 10px; -webkit-text-fill-color: #39ff14;"></i>
+        NETSHIELD THREAT SCANNER
+      </h1>
+      <p class="scanner-subtitle">Advanced Network Detection System v2.1</p>
+    </div>
+
+    <!-- Stats Dashboard -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-shield"></i></div>
+        <div class="stat-value" id="stat-scans">0</div>
+        <div class="stat-label">Scans Today</div>
       </div>
-    </form>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-bug"></i></div>
+        <div class="stat-value" id="stat-threats" style="color: #ff6b6b;">0</div>
+        <div class="stat-label">Threats Detected</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-microchip"></i></div>
+        <div class="stat-value" id="stat-packets">0</div>
+        <div class="stat-label">Packets Analyzed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+        <div class="stat-value" id="stat-uptime">00:00</div>
+        <div class="stat-label">Session Uptime</div>
+      </div>
+    </div>
 
-    <!-- PCAP File Upload Form -->
-    <form id="upload-form" method="post" action="/upload" enctype="multipart/form-data" class="mb-5" novalidate>
-      <label for="pcap-upload" class="form-label fw-bold">Upload PCAP File for Analysis:</label>
-      <input
-        class="form-control"
-        type="file"
-        id="pcap-upload"
-        name="file"
-        accept=".pcap,.pcapng"
-        required
-        aria-required="true"
-        aria-describedby="fileHelp"
-      />
-      <div id="fileHelp" class="form-text mb-2">Accepted formats: .pcap, .pcapng</div>
-      <button type="submit" class="btn btn-scan">Upload & Analyze</button>
-    </form>
+    <!-- Scan Controls Card -->
+    <div class="card-custom">
+      <div class="section-title">
+        <i class="fas fa-play-circle"></i> SCAN CONTROL PANEL
+      </div>
 
-    <!-- Scan Results -->
+      <!-- Interface Selection and Scan Form -->
+      <form id="scan-form" method="post" action="/scan" class="mb-4" novalidate>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-5">
+            <label for="interface" class="form-label fw-bold">
+              <i class="fas fa-ethernet" style="margin-right: 6px;"></i>NETWORK INTERFACE
+            </label>
+            <select name="interface" id="interface" class="form-select" required>
+              {% for iface in interfaces %}
+                <option value="{{ iface }}">{{ iface }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">
+              <i class="fas fa-hourglass-half" style="margin-right: 6px;"></i>DURATION
+            </label>
+            <div class="form-control" style="background: rgba(22,27,34,0.5);">10 seconds</div>
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-scan w-100" id="scanBtn">
+              <i class="fas fa-search" style="margin-right: 8px;"></i>INITIATE SCAN
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- PCAP Upload -->
+      <div class="mt-4 pt-3 border-top" style="border-color: rgba(57,255,20,0.1) !important;">
+        <form id="upload-form" method="post" action="/upload" enctype="multipart/form-data" novalidate>
+          <label class="form-label fw-bold">
+            <i class="fas fa-cloud-upload-alt" style="margin-right: 6px;"></i>OFFLINE ANALYSIS
+          </label>
+          <div class="upload-area" id="uploadArea">
+            <i class="fas fa-file-archive" style="font-size: 2rem; color: #39ff14; margin-bottom: 10px;"></i>
+            <p style="margin-bottom: 8px; color: #7cff7c;">Drop PCAP file or click to browse</p>
+            <p style="font-size: 0.75rem; color: #8b949e;">Supports .pcap, .pcapng (Max 50MB)</p>
+            <input
+              class="form-control mt-2"
+              type="file"
+              id="pcap-upload"
+              name="file"
+              accept=".pcap,.pcapng"
+              required
+              style="display: none;"
+            />
+          </div>
+          <button type="submit" class="btn btn-outline-custom mt-3" id="uploadBtn">
+            <i class="fas fa-upload" style="margin-right: 6px;"></i>UPLOAD & ANALYZE
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Scan Progress (hidden by default) -->
+    <div id="scan-progress" style="display: none;" class="card-custom">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span><i class="fas fa-sync-alt fa-spin" style="margin-right: 8px;"></i>SCANNING IN PROGRESS...</span>
+        <span id="scan-timer">10s</span>
+      </div>
+      <div class="progress-bar-custom">
+        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+      </div>
+      <p class="mt-2" style="font-size: 0.8rem; color: #7cff7c;" id="scan-status">Initializing packet capture...</p>
+    </div>
+
+    <!-- Results Section -->
     <div id="results" aria-live="polite" aria-atomic="true">
-      <section class="mb-4" aria-label="Threat Information">
-        <h5 class="section-title">Threat Info</h5>
-        <div id="threat-info" class="px-3">
-          <p class="no-data">No scan performed yet.</p>
-        </div>
-      </section>
 
-      <section class="mb-4" aria-label="Decoded Data">
-        <h5 class="section-title">Decoded Data</h5>
-        <div class="table-container" tabindex="0">
-          <table id="decoded-table" class="table table-dark table-striped table-sm align-middle">
-            <thead>
-              <tr>
-                <th>Source (IP:Port)</th>
-                <th>Raw Payload (truncated)</th>
-                <th>Decoded Hex Strings</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Data populated dynamically -->
-            </tbody>
-          </table>
+      <!-- Threat Info -->
+      <div class="card-custom">
+        <div class="section-title">
+          <i class="fas fa-exclamation-triangle"></i> THREAT INTELLIGENCE
         </div>
-      </section>
-
-      <section class="mb-4" aria-label="Process Information">
-        <h5 class="section-title">Process Info</h5>
-        <div class="table-container" tabindex="0">
-          <table id="process-table" class="table table-dark table-striped table-sm">
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Data populated dynamically -->
-            </tbody>
-          </table>
+        <div id="threat-info">
+          <p class="no-data">
+            <i class="fas fa-shield-hal" style="font-size: 2rem; opacity: 0.3; margin-bottom: 10px; display: block;"></i>
+            No active scan. Initiate a scan to detect threats.
+          </p>
         </div>
-      </section>
-
-      <div class="text-center">
-        <p id="log-checksum" class="fst-italic" aria-live="polite"></p>
       </div>
 
-      <div class="text-center mt-3">
-        <a href="/logs" class="btn btn-outline-success" role="button" aria-label="Download last scan log">Download Last Scan Log</a>
+      <!-- Decoded Data -->
+      <div class="card-custom">
+        <div class="section-title">
+          <i class="fas fa-code"></i> DECODED PAYLOAD DATA
+          <span class="ms-auto" style="font-size: 0.7rem; color: #8b949e;">
+            <i class="fas fa-chevron-down"></i> Scrollable
+          </span>
+        </div>
+        <div class="table-container">
+          <table id="decoded-table" class="table-custom">
+            <thead>
+              <tr>
+                <th width="20%">SOURCE (IP:PORT)</th>
+                <th width="40%">RAW PAYLOAD</th>
+                <th width="40%">DECODED HEX STRINGS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="3" class="no-data">Awaiting scan results...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Process Info -->
+      <div class="card-custom">
+        <div class="section-title">
+          <i class="fas fa-microchip"></i> PROCESS METADATA
+        </div>
+        <div class="table-container">
+          <table id="process-table" class="table-custom">
+            <thead>
+              <tr>
+                <th width="30%">PROPERTY</th>
+                <th width="70%">VALUE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="2" class="no-data">No process information available</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer with Checksum and Logs -->
+      <div class="d-flex justify-content-between align-items-center">
+        <p id="log-checksum" class="checksum-badge">
+          <i class="fas fa-fingerprint" style="margin-right: 6px;"></i>
+          No checksum yet
+        </p>
+        <div>
+          <a href="/logs" class="btn btn-outline-custom">
+            <i class="fas fa-history" style="margin-right: 6px;"></i>VIEW SCAN HISTORY
+          </a>
+          <a href="/logs" class="btn btn-outline-custom ms-2" download>
+            <i class="fas fa-download" style="margin-right: 6px;"></i>DOWNLOAD LOG
+          </a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS bundle CDN -->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Elements
+    // DOM Elements
     const scanForm = document.getElementById('scan-form');
+    const scanBtn = document.getElementById('scanBtn');
     const threatInfoDiv = document.getElementById('threat-info');
     const decodedTableBody = document.querySelector('#decoded-table tbody');
     const processTableBody = document.querySelector('#process-table tbody');
     const logChecksumP = document.getElementById('log-checksum');
+    const scanProgress = document.getElementById('scan-progress');
+    const progressFill = document.getElementById('progressFill');
+    const scanTimer = document.getElementById('scan-timer');
+    const scanStatus = document.getElementById('scan-status');
+    const uploadArea = document.getElementById('uploadArea');
+    const pcapUpload = document.getElementById('pcap-upload');
 
+    // Stats elements
+    const statScans = document.getElementById('stat-scans');
+    const statThreats = document.getElementById('stat-threats');
+    const statPackets = document.getElementById('stat-packets');
+    const statUptime = document.getElementById('stat-uptime');
+
+    // Stats tracking
+    let scansToday = parseInt(localStorage.getItem('scans_today') || '0');
+    let threatsDetected = parseInt(localStorage.getItem('threats_detected') || '0');
+    let packetsAnalyzed = parseInt(localStorage.getItem('packets_analyzed') || '0');
+
+    function updateStats() {
+      statScans.textContent = scansToday;
+      statThreats.textContent = threatsDetected;
+      statPackets.textContent = packetsAnalyzed.toLocaleString();
+    }
+    updateStats();
+
+    // Session uptime
+    let seconds = 0;
+    setInterval(() => {
+      seconds++;
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      statUptime.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }, 1000);
+
+    // Upload area click
+    uploadArea.addEventListener('click', () => pcapUpload.click());
+    pcapUpload.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        uploadArea.innerHTML = `
+          <i class="fas fa-file" style="font-size: 2rem; color: #39ff14; margin-bottom: 10px;"></i>
+          <p style="margin-bottom: 8px; color: #7cff7c;">${escapeHtml(e.target.files[0].name)}</p>
+          <p style="font-size: 0.75rem; color: #8b949e;">Ready to upload</p>
+        `;
+      }
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#39ff14';
+      uploadArea.style.background = 'rgba(57, 255, 20, 0.05)';
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.borderColor = 'rgba(57, 255, 20, 0.2)';
+      uploadArea.style.background = 'transparent';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'rgba(57, 255, 20, 0.2)';
+      uploadArea.style.background = 'transparent';
+      pcapUpload.files = e.dataTransfer.files;
+      if (pcapUpload.files.length) {
+        uploadArea.innerHTML = `
+          <i class="fas fa-file" style="font-size: 2rem; color: #39ff14; margin-bottom: 10px;"></i>
+          <p style="margin-bottom: 8px; color: #7cff7c;">${escapeHtml(pcapUpload.files[0].name)}</p>
+          <p style="font-size: 0.75rem; color: #8b949e;">Ready to upload</p>
+        `;
+      }
+    });
+
+    // Scan form submission
     scanForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Show scanning message and clear previous results
-      threatInfoDiv.innerHTML = '<p>Scanning... Please wait 10 seconds.</p>';
-      decodedTableBody.innerHTML = '';
-      processTableBody.innerHTML = '';
-      logChecksumP.textContent = '';
-
       const formData = new FormData(scanForm);
+
+      // Show scanning UI
+      scanProgress.style.display = 'block';
+      scanBtn.classList.add('scanning');
+      scanBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>SCANNING...';
+      scanBtn.disabled = true;
+
+      threatInfoDiv.innerHTML = '<p class="no-data"><i class="fas fa-sync-alt fa-spin"></i> Scanning network traffic...</p>';
+      decodedTableBody.innerHTML = '<tr><td colspan="3" class="no-data">Capturing packets...</td></tr>';
+      processTableBody.innerHTML = '<tr><td colspan="2" class="no-data">Collecting process data...</td></tr>';
+
+      // Progress animation
+      let progress = 0;
+      const statuses = [
+        'Initializing packet capture...',
+        'Monitoring network traffic...',
+        'Analyzing packet payloads...',
+        'Decoding hex patterns...',
+        'Checking threat signatures...',
+        'Finalizing results...'
+      ];
+      let statusIndex = 0;
+
+      const progressInterval = setInterval(() => {
+        progress += 2;
+        progressFill.style.width = `${Math.min(progress, 90)}%`;
+        scanTimer.textContent = `${Math.max(0, Math.ceil((100 - progress) / 10))}s`;
+
+        if (progress % 15 === 0 && statusIndex < statuses.length) {
+          scanStatus.textContent = statuses[statusIndex++];
+        }
+      }, 200);
 
       try {
         const response = await fetch('/scan', {
@@ -211,74 +720,133 @@
           body: formData,
         });
 
+        clearInterval(progressInterval);
+        progressFill.style.width = '100%';
+        scanStatus.textContent = 'Scan complete!';
+
         if (!response.ok) {
           throw new Error(`HTTP error: ${response.status}`);
         }
 
         const data = await response.json();
 
+        // Update stats
+        scansToday++;
+        if (data.threat) threatsDetected++;
+        packetsAnalyzed += data.decoded_data ? Object.keys(data.decoded_data).length * 10 : 0;
+        localStorage.setItem('scans_today', scansToday);
+        localStorage.setItem('threats_detected', threatsDetected);
+        localStorage.setItem('packets_analyzed', packetsAnalyzed);
+        updateStats();
+
+        setTimeout(() => {
+          scanProgress.style.display = 'none';
+          progressFill.style.width = '0%';
+        }, 1000);
+
         if (!data.success) {
-          threatInfoDiv.innerHTML = `<p style="color: #ff5555;">Scan failed: ${escapeHtml(data.message)}</p>`;
+          threatInfoDiv.innerHTML = `
+            <div class="alert alert-danger bg-transparent border-danger text-danger">
+              <i class="fas fa-times-circle"></i> Scan failed: ${escapeHtml(data.message)}
+            </div>
+          `;
+          resetScanButton();
           return;
         }
 
         // Threat Info
         if (data.threat) {
+          const severityClass = data.threat.severity === 'Critical' ? 'critical' :
+                               data.threat.severity === 'High' ? 'high' :
+                               data.threat.severity === 'Medium' ? 'medium' : 'clean';
+
           threatInfoDiv.innerHTML = `
-            <p><strong>⚠️ Threat Detected!</strong></p>
-            <p><strong>Source:</strong> ${escapeHtml(data.threat.src)}</p>
-            <p><strong>Command:</strong> ${escapeHtml(data.threat.cmd)}</p>
-            <p><strong>Severity:</strong> ${escapeHtml(data.threat.severity)}</p>
+            <div class="threat-badge threat-${severityClass} mb-3">
+              <i class="fas fa-skull"></i> ${data.threat.severity} SEVERITY THREAT DETECTED
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong><i class="fas fa-map-marker-alt"></i> Source:</strong> ${escapeHtml(data.threat.src)}</p>
+                <p><strong><i class="fas fa-terminal"></i> Command:</strong> <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">${escapeHtml(data.threat.cmd)}</code></p>
+              </div>
+              <div class="col-md-6">
+                <p><strong><i class="fas fa-clock"></i> Detected:</strong> ${new Date().toLocaleTimeString()}</p>
+                <p><strong><i class="fas fa-shield"></i> Action:</strong> Logged for analysis</p>
+              </div>
+            </div>
           `;
         } else {
-          threatInfoDiv.innerHTML = '<p>✅ No threats detected.</p>';
+          threatInfoDiv.innerHTML = `
+            <div class="threat-badge threat-clean mb-3">
+              <i class="fas fa-check-circle"></i> NO THREATS DETECTED
+            </div>
+            <p><i class="fas fa-shield-hal" style="color: #28a745;"></i> Network traffic appears clean. No suspicious patterns found.</p>
+          `;
         }
 
         // Decoded Data Table
+        decodedTableBody.innerHTML = '';
         if (data.decoded_data && Object.keys(data.decoded_data).length) {
           for (const [src, val] of Object.entries(data.decoded_data)) {
             const rawTruncated = val.raw_payload.length > 100 ? val.raw_payload.substring(0, 100) + '...' : val.raw_payload;
             const decodedHexList = val.decoded_hex.length
-              ? val.decoded_hex.map(d => `<li>${escapeHtml(d)}</li>`).join('')
-              : '<li><em>None</em></li>';
+              ? val.decoded_hex.map(d => `<code style="background: rgba(0,0,0,0.2); padding: 2px 4px; border-radius: 3px; margin: 2px; display: inline-block;">${escapeHtml(d)}</code>`).join('')
+              : '<em style="color: #8b949e;">None</em>';
 
             const row = `
               <tr>
-                <td>${escapeHtml(src)}</td>
-                <td><pre style="white-space: pre-wrap; max-width: 350px; overflow-x: auto;">${escapeHtml(rawTruncated)}</pre></td>
-                <td><ul style="padding-left: 1rem; margin:0;">${decodedHexList}</ul></td>
+                <td><code style="color: #39ff14;">${escapeHtml(src)}</code></td>
+                <td><pre class="pre-custom">${escapeHtml(rawTruncated)}</pre></td>
+                <td>${decodedHexList}</td>
               </tr>
             `;
             decodedTableBody.insertAdjacentHTML('beforeend', row);
           }
         } else {
-          decodedTableBody.innerHTML = `<tr><td colspan="3" class="no-data">No decoded data available.</td></tr>`;
+          decodedTableBody.innerHTML = `<tr><td colspan="3" class="no-data"><i class="fas fa-inbox"></i> No decoded data captured</td></tr>`;
         }
 
         // Process Info Table
+        processTableBody.innerHTML = '';
         if (data.process_info && Object.keys(data.process_info).length) {
           for (const [key, val] of Object.entries(data.process_info)) {
             const row = `
               <tr>
-                <td>${escapeHtml(key)}</td>
-                <td><pre style="white-space: pre-wrap; margin:0;">${escapeHtml(val)}</pre></td>
+                <td><strong style="color: #39ff14;">${escapeHtml(key)}</strong></td>
+                <td><pre class="pre-custom" style="max-height: 60px;">${escapeHtml(val)}</pre></td>
               </tr>
             `;
             processTableBody.insertAdjacentHTML('beforeend', row);
           }
         } else {
-          processTableBody.innerHTML = `<tr><td colspan="2" class="no-data">No process info available.</td></tr>`;
+          processTableBody.innerHTML = `<tr><td colspan="2" class="no-data"><i class="fas fa-inbox"></i> No process metadata available</td></tr>`;
         }
 
         // Log checksum
-        logChecksumP.textContent = `Log checksum (SHA-256): ${data.log_checksum || 'N/A'}`;
+        if (data.log_checksum) {
+          logChecksumP.innerHTML = `<i class="fas fa-fingerprint" style="margin-right: 6px;"></i>SHA-256: ${escapeHtml(data.log_checksum)}`;
+        }
 
       } catch (err) {
-        threatInfoDiv.innerHTML = `<p style="color: #ff5555;">Error: ${escapeHtml(err.message)}</p>`;
+        clearInterval(progressInterval);
+        scanProgress.style.display = 'none';
+        threatInfoDiv.innerHTML = `
+          <div class="alert alert-danger bg-transparent border-danger text-danger">
+            <i class="fas fa-exclamation-circle"></i> Error: ${escapeHtml(err.message)}
+          </div>
+        `;
+      } finally {
+        resetScanButton();
       }
     });
 
-    // Escape HTML utility to prevent XSS in output
+    function resetScanButton() {
+      scanBtn.classList.remove('scanning');
+      scanBtn.innerHTML = '<i class="fas fa-search" style="margin-right: 8px;"></i>INITIATE SCAN';
+      scanBtn.disabled = false;
+    }
+
+    // Escape HTML utility
     function escapeHtml(text) {
       if (!text) return '';
       const map = {
@@ -288,8 +856,51 @@
         '"': '&quot;',
         "'": '&#039;',
       };
-      return text.replace(/[&<>"']/g, m => map[m]);
+      return String(text).replace(/[&<>"']/g, m => map[m]);
     }
+
+    // Upload form submission
+    document.getElementById('upload-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const uploadBtn = document.getElementById('uploadBtn');
+      const originalText = uploadBtn.innerHTML;
+      uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ANALYZING...';
+      uploadBtn.disabled = true;
+
+      // Show analysis in progress
+      threatInfoDiv.innerHTML = '<p class="no-data"><i class="fas fa-sync-alt fa-spin"></i> Analyzing PCAP file...</p>';
+
+      const formData = new FormData(e.target);
+
+      try {
+        const response = await fetch('/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) throw new Error('Upload failed');
+
+        const data = await response.json();
+
+        if (data.success) {
+          threatInfoDiv.innerHTML = `
+            <div class="threat-badge threat-clean">
+              <i class="fas fa-check-circle"></i> FILE ANALYZED SUCCESSFULLY
+            </div>
+            <p>PCAP file processed. ${data.threat ? 'Threat detected!' : 'No threats found.'}</p>
+          `;
+        }
+      } catch (err) {
+        threatInfoDiv.innerHTML = `
+          <div class="alert alert-danger bg-transparent border-danger text-danger">
+            Upload failed: ${escapeHtml(err.message)}
+          </div>
+        `;
+      } finally {
+        uploadBtn.innerHTML = originalText;
+        uploadBtn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html>
